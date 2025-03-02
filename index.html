@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rondas de Segurança</title>
+    <title>Rondas de prédios</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,18 +68,12 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             text-align: left;
         }
-
-        .delete-btn {
-            background-color: red;
-            margin-top: 5px;
-        }
-
-        .delete-btn:hover {
-            background-color: darkred;
-        }
     </style>
 </head>
 <body>
+    <!-- Saudação -->
+    <div id="saudacao" class="container"></div>
+
     <!-- Tela de login -->
     <div id="login" class="container">
         <h2>Insira a senha</h2>
@@ -137,12 +131,13 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            saudacaoHorario();
+            verificarExclusaoSemanal();
             carregarRondas(); // Exibir registros salvos ao carregar a página
 
             document.getElementById("rondaForm").addEventListener("submit", function (event) {
-                event.preventDefault(); // Evita o recarregamento da página
+                event.preventDefault();
 
-                // Captura os valores do formulário
                 const nome = document.getElementById("nome").value;
                 const horario = document.getElementById("horario").value;
                 const predio = document.getElementById("predio").value;
@@ -151,58 +146,39 @@
                 const alarme = document.getElementById("alarme").value;
                 const observacao = document.getElementById("observacao").value;
 
-                // Cria um objeto com os dados
-                const ronda = { nome, horario, predio, portas, luzes, alarme, observacao };
+                const ronda = { nome, horario, predio, portas, luzes, alarme, observacao, data: new Date().getTime() };
 
-                // Salva os registros no LocalStorage
                 let rondasSalvas = JSON.parse(localStorage.getItem("rondas")) || [];
                 rondasSalvas.push(ronda);
                 localStorage.setItem("rondas", JSON.stringify(rondasSalvas));
 
                 alert("Ronda salva com sucesso!");
                 document.getElementById("rondaForm").reset();
-
-                carregarRondas(); // Atualiza a lista de registros
+                carregarRondas();
             });
         });
 
-        // Função para verificar a senha e liberar o acesso
-        function verificarSenha() {
-            const senhaCorreta = '1234'; // Ajuste conforme necessário
-            const senhaDigitada = document.getElementById('senha').value;
+        function saudacaoHorario() {
+            const agora = new Date();
+            const hora = agora.getHours();
+            let saudacao = "";
 
-            if (senhaDigitada === senhaCorreta) {
-                document.getElementById('login').classList.add('hidden');
-                document.getElementById('conteudo').classList.remove('hidden');
+            if (hora >= 5 && hora < 12) {
+                saudacao = "Bom dia!";
+            } else if (hora >= 12 && hora < 18) {
+                saudacao = "Boa tarde!";
             } else {
-                alert('Senha incorreta!');
+                saudacao = "Boa noite!";
             }
-        }
 
-        // Função para carregar os registros salvos
-        function carregarRondas() {
-            const lista = document.getElementById("listaRondas");
-            lista.innerHTML = ""; // Limpa a lista antes de exibir os registros
+            const resposta = prompt(`${saudacao} Como está seu dia?`);
+            if (resposta) {
+                alert("Espero que tenha um ótimo dia! Conte sempre com a gente!");
+            }
 
-            let rondasSalvas = JSON.parse(localStorage.getItem("rondas")) || [];
-
-            rondasSalvas.forEach((ronda, index) => {
-                const item = document.createElement("li");
-                item.innerHTML = `<strong>${ronda.nome}</strong> - ${ronda.horario} - Prédio ${ronda.predio} 
-                                  <br>Portas: ${ronda.portas}, Luzes: ${ronda.luzes}, Alarme: ${ronda.alarme} 
-                                  <br>Obs: ${ronda.observacao} 
-                                  <br><button class="delete-btn" onclick="removerRonda(${index})">Excluir</button>`;
-                lista.appendChild(item);
-            });
-        }
-
-        // Função para remover um registro
-        function removerRonda(index) {
-            let rondasSalvas = JSON.parse(localStorage.getItem("rondas")) || [];
-            rondasSalvas.splice(index, 1); // Remove o item pelo índice
-            localStorage.setItem("rondas", JSON.stringify(rondasSalvas));
-            carregarRondas(); // Atualiza a exibição
+            document.getElementById("saudacao").textContent = saudacao;
         }
     </script>
 </body>
 </html>
+
